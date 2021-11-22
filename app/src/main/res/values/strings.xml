@@ -2,4 +2,6 @@
     <string name="app_name">CloudWalker Test</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="first_task">First Task</string>
+    <string name="third_task">Third Task</string>
 </resources>

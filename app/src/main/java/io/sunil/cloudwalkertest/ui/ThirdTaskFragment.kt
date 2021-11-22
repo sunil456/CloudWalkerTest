@@ -1,33 +1,38 @@
 package io.sunil.cloudwalkertest.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.withCreated
+import androidx.recyclerview.widget.GridLayoutManager
 import io.sunil.cloudwalkertest.R
+import io.sunil.cloudwalkertest.adapters.PhotosAdapter
+import io.sunil.cloudwalkertest.utils.Resource
+import io.sunil.cloudwalkertest.viewmodel.PhotoViewModel
+import kotlinx.android.synthetic.main.fragment_first_teask.*
+import kotlinx.android.synthetic.main.fragment_first_teask.progressBar
+import kotlinx.android.synthetic.main.fragment_third_task.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ThirdTaskFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ThirdTaskFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class ThirdTaskFragment : Fragment(R.layout.fragment_third_task) {
+
+    lateinit var photoViewModel: PhotoViewModel
+
+    lateinit var photosAdapter: PhotosAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+        photoViewModel = (activity as MainActivity).photoViewModel
+//        photoViewModel.fetchUsersPhotos()
+
     }
 
     override fun onCreateView(
@@ -38,23 +43,59 @@ class ThirdTaskFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_third_task, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ThirdTaskFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ThirdTaskFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpRecyclerView()
+        photoViewModel.fetchUsersPhotos()
+
+
+
+        photoViewModel.userPhotos.observe(viewLifecycleOwner, Observer { response ->
+            when(response){
+                is Resource.Success ->{
+                    hideProgressBar()
+                    response.data.let { photosResponse ->
+                        photosAdapter.differ.submitList(photosResponse)
+
+                        Log.d("SUNIL", "onViewCreated: $photosResponse")
+
+                    }
+                }
+
+                is Resource.Error -> {
+                    hideProgressBar()
+                    response.message?.let {
+                        Log.d("SUNIL", "onViewCreated: $it")
+                    }
+                    response.statusCode?.let {
+                        Log.d("SUNIL", "onViewCreated: $it")
+                    }
+                }
+
+                is Resource.Loading -> {
+                    showProgressBar()
                 }
             }
+        })
     }
+
+    private fun setUpRecyclerView(){
+        photosAdapter = PhotosAdapter()
+
+        rvOnlyPhotos.apply {
+            adapter = photosAdapter
+            layoutManager = GridLayoutManager(activity, 5)
+        }
+
+    }
+
+    private fun hideProgressBar(){
+        progressBar.visibility = View.INVISIBLE
+    }
+
+    private fun showProgressBar(){
+        progressBar.visibility = View.VISIBLE
+    }
+
+
 }
