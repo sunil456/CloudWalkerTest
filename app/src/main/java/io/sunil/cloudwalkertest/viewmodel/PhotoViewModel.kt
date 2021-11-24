@@ -52,41 +52,67 @@ class PhotoViewModel(
             userPhotos.postValue(Resource.Loading())
 
 
-            try {
 
-                coroutineScope {
+            withContext(Dispatchers.IO){
+                val multipleIds = listOf(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,12,22,23,24,25,26,27,28,29,30)
+                val content = arrayListOf<Photo>()
 
-                    for ( i in 1..50)
-                    {
-                        usersFromApiDeferred = async { photoRepository.getUsersPhotos(i) }
+                val runningTask = multipleIds.map { id ->
+                    async {
+                        val apiResponse = photoRepository.getUsersPhotos(id)
+                        id to apiResponse
+
                     }
-
-
-                    withContext(Dispatchers.IO){
-                        val usersFromApi = usersFromApiDeferred.await()
-                        if (usersFromApi.isSuccessful)
-                        {
-                            usersFromApi.body()?.let {
-                                val allUsersFromApi = mutableListOf<Photo>()
-                                allUsersFromApi.toMutableList().addAll(listOf(it))
-
-                                userPhotos.postValue(Resource.Success(allUsersFromApi))
-                            }
-                        }
-
-                        userPhotos.postValue(Resource.Error(usersFromApi.message(), usersFromApi.code()))
-                    }
-
-
-
-
-
-
                 }
+
+                val response = runningTask.awaitAll()
+
+
+
+
+                response.forEach { (_, response) ->
+                    if (response.isSuccessful)
+                    {
+
+                        response.body()?.let {
+                            content.addAll(listOf(it))
+
+                        }
+                    }
+                }
+                userPhotos.postValue(Resource.Success(content))
             }
-            catch (e: Exception) {
-                userPhotos.postValue(Resource.Error("Something Went Wrong", hashCode()))
-            }
+
+
+//            try {
+//
+//                val mutableListOf = listOf(0..50)
+//                coroutineScope {
+//
+//                    for ( i in 1..50)
+//                    {
+//                        usersFromApiDeferred = async { photoRepository.getUsersPhotos(i) }
+//                    }
+//
+//
+//                    val usersFromApi = usersFromApiDeferred.await()
+//                    if (usersFromApi.isSuccessful)
+//                    {
+//                        usersFromApi.body()?.let {
+//                            val allUsersFromApi = mutableListOf<Photo>()
+//                            allUsersFromApi.toMutableList().addAll(listOf(it))
+//
+//                            userPhotos.postValue(Resource.Success(allUsersFromApi))
+//                        }
+//                    }
+//                    else{
+//                        userPhotos.postValue(Resource.Error(usersFromApi.message(), usersFromApi.code()))
+//                    }
+//                }
+//            }
+//            catch (e: Exception) {
+//                userPhotos.postValue(Resource.Error("Something Went Wrong", hashCode()))
+//            }
         }
     }
 

@@ -4,7 +4,6 @@ import io.sunil.cloudwalkertest.model.Photo
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface TestAPI {
 
@@ -12,5 +11,5 @@ interface TestAPI {
     suspend fun getPhotos() : Response<List<Photo>>
 
     @GET("photos/{id}")
-    suspend fun getUserPhotos(@Path("id") userId:Int) : Response<Photo>
+    suspend fun getUserPhotos(@Path("id") userId: Int) : Response<Photo>
 }

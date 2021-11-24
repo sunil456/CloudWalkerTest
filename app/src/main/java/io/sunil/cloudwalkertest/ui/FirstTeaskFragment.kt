@@ -50,7 +50,7 @@ class FirstTeaskFragment : Fragment(R.layout.fragment_first_teask   ) {
                     response.data.let { photosResponse ->
                         photosAdapter.differ.submitList(photosResponse)
 
-                        Log.d("SUNIL", "onViewCreated: $photosResponse")
+//                        Log.d("SUNIL", "onViewCreated: $photosResponse")
 
                     }
                 }
@@ -61,7 +61,16 @@ class FirstTeaskFragment : Fragment(R.layout.fragment_first_teask   ) {
                         Log.d("SUNIL", "onViewCreated: $it")
                     }
                     response.statusCode?.let {
-                        Log.d("SUNIL", "onViewCreated: $it")
+
+                        //here based on status code we can show alertBox or what ever we want
+                        if(it == 404)
+                            Log.d("SUNIL", "onViewCreated: $it")
+
+                        if (it == 403)
+                            Log.d("SUNIL", "onViewCreated: $it")
+
+                        if (it == 502)
+                            Log.d("SUNIL", "onViewCreated: $it")
                     }
                 }
 
@@ -74,7 +83,7 @@ class FirstTeaskFragment : Fragment(R.layout.fragment_first_teask   ) {
     }
 
     private fun setUpRecyclerView(){
-        photosAdapter = PhotosAdapter()
+        photosAdapter = PhotosAdapter(0)
 
         rvPhotos.apply {
 

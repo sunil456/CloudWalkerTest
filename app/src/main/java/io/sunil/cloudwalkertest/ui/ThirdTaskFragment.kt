@@ -7,17 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import androidx.lifecycle.withCreated
 import androidx.recyclerview.widget.GridLayoutManager
 import io.sunil.cloudwalkertest.R
 import io.sunil.cloudwalkertest.adapters.PhotosAdapter
 import io.sunil.cloudwalkertest.utils.Resource
 import io.sunil.cloudwalkertest.viewmodel.PhotoViewModel
-import kotlinx.android.synthetic.main.fragment_first_teask.*
 import kotlinx.android.synthetic.main.fragment_first_teask.progressBar
 import kotlinx.android.synthetic.main.fragment_third_task.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 
 class ThirdTaskFragment : Fragment(R.layout.fragment_third_task) {
@@ -57,7 +53,7 @@ class ThirdTaskFragment : Fragment(R.layout.fragment_third_task) {
                     response.data.let { photosResponse ->
                         photosAdapter.differ.submitList(photosResponse)
 
-                        Log.d("SUNIL", "onViewCreated: $photosResponse")
+                        Log.d("SUNIL", "onViewCreated Third Task: $photosResponse")
 
                     }
                 }
@@ -68,7 +64,16 @@ class ThirdTaskFragment : Fragment(R.layout.fragment_third_task) {
                         Log.d("SUNIL", "onViewCreated: $it")
                     }
                     response.statusCode?.let {
-                        Log.d("SUNIL", "onViewCreated: $it")
+                        if(it == 404)
+                            Log.d("SUNIL", "onViewCreated: $it")
+
+                        if (it == 403)
+                            Log.d("SUNIL", "onViewCreated: $it")
+
+                        if (it == 502)
+                            Log.d("SUNIL", "onViewCreated: $it")
+
+
                     }
                 }
 
@@ -80,11 +85,12 @@ class ThirdTaskFragment : Fragment(R.layout.fragment_third_task) {
     }
 
     private fun setUpRecyclerView(){
-        photosAdapter = PhotosAdapter()
+        photosAdapter = PhotosAdapter(1)
 
         rvOnlyPhotos.apply {
             adapter = photosAdapter
             layoutManager = GridLayoutManager(activity, 5)
+
         }
 
     }

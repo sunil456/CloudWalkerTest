@@ -6,5 +6,5 @@ class PhotoRepository {
 
     suspend fun getPhotos() = RetrofitInstance.api.getPhotos()
 
-    suspend fun getUsersPhotos(id :Int) = RetrofitInstance.api.getUserPhotos(id)
+    suspend fun getUsersPhotos(id: Int) = RetrofitInstance.api.getUserPhotos(id)
 }

@@ -24,7 +24,7 @@ import com.bumptech.glide.load.model.GlideUrl
 
 
 
-class PhotosAdapter : RecyclerView.Adapter<PhotosAdapter.PhotoViewHolder>() {
+class PhotosAdapter(val comingFrom: Int) : RecyclerView.Adapter<PhotosAdapter.PhotoViewHolder>() {
 
 
     inner class PhotoViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView)
@@ -56,7 +56,7 @@ class PhotosAdapter : RecyclerView.Adapter<PhotosAdapter.PhotoViewHolder>() {
         val photo = differ.currentList[position]
 
         val glideUrl = GlideUrl(
-            photo.url, LazyHeaders.Builder()
+            photo.thumbnailUrl, LazyHeaders.Builder()
                 .addHeader(
                     "User-Agent",
                     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36"
@@ -69,7 +69,7 @@ class PhotosAdapter : RecyclerView.Adapter<PhotosAdapter.PhotoViewHolder>() {
                 .load(glideUrl)
                 .placeholder(R.drawable.ic_baseline_image_24)
                 .error(R.drawable.ic_baseline_image_24)
-                .override(SIZE_ORIGINAL, SIZE_ORIGINAL).listener(
+                .override(50, 50).listener(
 
                     object : RequestListener<Drawable>{
                         override fun onLoadFailed(
@@ -79,6 +79,7 @@ class PhotosAdapter : RecyclerView.Adapter<PhotosAdapter.PhotoViewHolder>() {
                             isFirstResource: Boolean
                         ): Boolean {
                             Log.e("TAG", "Error loading image", e)
+                            progressBar2.visibility = View.GONE
                             return false
                         }
 
@@ -89,12 +90,16 @@ class PhotosAdapter : RecyclerView.Adapter<PhotosAdapter.PhotoViewHolder>() {
                             dataSource: DataSource?,
                             isFirstResource: Boolean
                         ): Boolean {
+                            progressBar2.visibility = View.GONE
                             return false
                         }
                     }
                 ).into(imageView)
 
-            textView.text = photo.title
+            if (comingFrom == 1)
+                textView.visibility = View.GONE
+            else
+                textView.text = photo.title
         }
     }
 
